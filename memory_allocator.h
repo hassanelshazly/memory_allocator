@@ -39,13 +39,28 @@ private:
     QList<Segment> m_segments;
     QList<Segment> m_holes;
 
+    Segment addSegmentIn(
+            Segment seg,
+            std::function<bool(const Segment&, const Segment&)> comp_func);
     void cleanupHoles();
 
-    static constexpr auto comp_address_func = [](const Segment &seg1, const Segment &seg2) {
+    static constexpr auto comp_address_func = [](
+            const Segment &seg1,
+            const Segment &seg2)
+    {
         return seg1.startingAddress() < seg2.startingAddress();
     };
-    static constexpr auto comp_size_func = [](const Segment &seg1, const Segment &seg2) {
+    static constexpr auto comp_size_func = [](
+            const Segment &seg1,
+            const Segment &seg2)
+    {
         return seg1.size() < seg2.size();
+    };
+    static constexpr auto comp_size_backward_func = [](
+            const Segment &seg1,
+            const Segment &seg2)
+    {
+        return seg1.size() > seg2.size();
     };
 };
 

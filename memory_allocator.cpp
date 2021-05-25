@@ -79,6 +79,23 @@ void MemoryAllocator::deleteProcess(int processId)
     cleanupHoles();
 }
 
+Segment MemoryAllocator::addSegment(const Segment &seg, AllocationType type)
+{
+    switch(type) {
+    case AllocationType::FIRST_FIT :
+        return addSegmentIn(seg, comp_address_func);
+        break;
+    case AllocationType::BEST_FIT :
+        return addSegmentIn(seg, comp_size_func);
+        break;
+    case AllocationType::WORST_FIT :
+        return addSegmentIn(seg, comp_size_backward_func);
+        break;
+    default:
+        throw QString("Unknown AllocationType");
+    }
+}
+
 void MemoryAllocator::compact()
 {
     std::sort(m_segments.begin(), m_segments.end(), comp_address_func);
@@ -106,6 +123,34 @@ QList<Segment> MemoryAllocator::holes() const
     return m_holes;
 }
 
+Segment MemoryAllocator::addSegmentIn(
+        Segment seg,
+        std::function<bool(const Segment&, const Segment&)> comp_func)
+{
+    std::sort(m_holes.begin(), m_holes.end(), comp_func);
+
+    bool done = false;
+    for(int i = 0; i < m_holes.size(); i++) {
+        if(m_holes[i].size() >= seg.size()) {
+            seg.setStartingAddress(m_holes[i].startingAddress());
+            int endAddress = m_holes[i].endingAddress();
+            m_holes[i].setStartingAddress(seg.endingAddress());
+            m_holes[i].setSize(
+                        endAddress -
+                        m_holes[i].startingAddress());
+            done = true;
+            if(m_holes[i].size() == 0) {
+                m_holes.erase(m_holes.begin() + i);
+            }
+            break;
+        }
+    }
+    if(!done)
+        throw QString("Segment Does't fit in Memory");
+    m_segments.push_back(seg);
+    return seg;
+}
+
 void MemoryAllocator::cleanupHoles()
 {
     std::sort(m_holes.begin(), m_holes.end(), comp_address_func);
@@ -117,7 +162,7 @@ void MemoryAllocator::cleanupHoles()
         if (first->startingAddress() != result->endingAddress()) {
             ++result;
         } else {
-             result->setSize(result->size() + first->size());
+            result->setSize(result->size() + first->size());
         }
         ++first;
     }
@@ -132,6 +177,34 @@ int MemoryAllocator::size() const
 void MemoryAllocator::setSize(int size)
 {
     m_size = size;
+}
+
+QList<Segment> MemoryAllocator::addProcess(const QList<Segment> &process, AllocationType type)
+{
+    if(!process.size())
+        throw QString("Empty process");
+
+    int processId = process[0].processId();
+
+    QList<Segment> list;
+    for(const Segment& seg: process) {
+        if(seg.processId() != processId) {
+            deleteProcess(processId);
+            throw QString("Process Id doesn't match between segments");
+        }
+        if(seg.type() != SegmentType::PROCESS) {
+            deleteProcess(processId);
+            throw QString("Expected Process not Hole");
+        }
+        try {
+            list.push_back(addSegment(seg, type));
+        }  catch (...){
+            deleteProcess(processId);
+            throw QString("One or more segments doesn't fit im memory");
+        }
+    }
+
+    return list;
 }
 
 QDebug operator<<(QDebug dbg, const MemoryAllocator &allocator) {

@@ -10,30 +10,30 @@ void testSegment() {
                 SegmentType::PROCESS);
 
     Segment hole(-1,
-                "Don't care",
-                6,
-                4,
-                SegmentType::HOLE);
+                 "Don't care",
+                 6,
+                 4,
+                 SegmentType::HOLE);
     qDebug() << seg << "\n" << hole << "\n";
 }
 
 
 void testAllocator() {
     Segment hole1(-1,
-                "Don't care",
-                5,
-                10,
-                SegmentType::HOLE);
+                  "Don't care",
+                  5,
+                  10,
+                  SegmentType::HOLE);
     Segment hole2(-1,
-                "Don't care",
-                50,
-                20,
-                SegmentType::HOLE);
+                  "Don't care",
+                  50,
+                  20,
+                  SegmentType::HOLE);
     Segment hole3(-1,
-                "Don't care",
-                30,
-                10,
-                SegmentType::HOLE);
+                  "Don't care",
+                  30,
+                  10,
+                  SegmentType::HOLE);
 
     MemoryAllocator allocator = MemoryAllocator::makeFromHoles({hole1, hole2, hole3}, 100);
     qDebug() << allocator;
@@ -46,4 +46,33 @@ void testAllocator() {
 
     allocator.deleteProcess(1);
     qDebug() << "After Deleting 1\n" << allocator;
+}
+
+void testAlgorithm() {
+    Segment hole1(-1,
+                  "Don't care",
+                  5,
+                  15,
+                  SegmentType::HOLE);
+    Segment hole2(-1,
+                  "Don't care",
+                  50,
+                  20,
+                  SegmentType::HOLE);
+    Segment hole3(-1,
+                  "Don't care",
+                  30,
+                  10,
+                  SegmentType::HOLE);
+
+    MemoryAllocator allocator = MemoryAllocator::makeFromHoles({hole1, hole2, hole3}, 100);
+    qDebug() << allocator;
+
+    qDebug() << allocator.addSegment(Segment(3,
+                                             "Data",
+                                             10,
+                                             SegmentType::PROCESS),
+                                     AllocationType::WORST_FIT);
+    qDebug() << allocator;
+
 }
