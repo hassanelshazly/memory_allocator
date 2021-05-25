@@ -38,6 +38,11 @@ void Segment::setStartingAddress(int startingAddress)
     m_startingAddress = startingAddress;
 }
 
+int Segment::endingAddress() const
+{
+    return m_startingAddress + m_size;
+}
+
 int Segment::size() const
 {
     return m_size;

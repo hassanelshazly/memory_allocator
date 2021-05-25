@@ -26,7 +26,11 @@ public:
     void deleteProcess(int processId);
     Segment addSegment(const Segment& seg, AllocationType type);
 
-    QList<Segment> getHoles();
+    void compact();
+
+
+    QList<Segment> getSegments() const;
+    QList<Segment> getHoles() const;
 
 private:
     int m_size;

@@ -30,6 +30,8 @@ public:
     int startingAddress() const;
     void setStartingAddress(int startingAddress);
 
+    int endingAddress() const;
+
     int size() const;
     void setSize(int size);
 
