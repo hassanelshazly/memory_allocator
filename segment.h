@@ -1,6 +1,7 @@
 #ifndef SEGMENT_H
 #define SEGMENT_H
 
+#include <QDebug>
 #include <QString>
 
 enum SegmentType {
@@ -40,6 +41,8 @@ public:
 
     SegmentType type() const;
     void setType(const SegmentType &type);
+
+    friend QDebug operator<<(QDebug dbg, const Segment &seg);
 
 private:
     int m_processId;

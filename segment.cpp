@@ -72,3 +72,15 @@ void Segment::setSize(int size)
 {
     m_size = size;
 }
+
+QDebug operator<<(QDebug dbg, const Segment &seg) {
+    if(seg.type() == SegmentType::PROCESS)
+        dbg.nospace() << "Segment: P" << seg.processId() << ":" << seg.name() << "\n";
+    else
+        dbg.nospace() << "Segment: Hole\n";
+
+    dbg.nospace() << "Starts at: " << seg.startingAddress() << "\n"
+                  << "Size: " << seg.size() << "\n"
+                  << "Ends at: " << seg.endingAddress() << "\n" ;
+    return dbg.nospace();
+}

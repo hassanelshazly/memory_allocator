@@ -9,7 +9,8 @@ CONFIG += c++17
 SOURCES += \
         main.cpp \
         memory_allocator.cpp \
-        segment.cpp
+        segment.cpp \
+        test.cpp
 
 RESOURCES += qml.qrc
 

@@ -19,7 +19,7 @@ public:
 
     static MemoryAllocator makeFromHoles(const QList<Segment>& holes, int size);
 
-    int getSize() const;
+    int size() const;
     void setSize(int size);
 
     QList<Segment> addProcess(const QList<Segment>& process, AllocationType type);
@@ -29,13 +29,17 @@ public:
     void compact();
 
 
-    QList<Segment> getSegments() const;
-    QList<Segment> getHoles() const;
+    QList<Segment> segments() const;
+    QList<Segment> holes() const;
+
+    friend QDebug operator<<(QDebug dbg, const MemoryAllocator &allocator);
 
 private:
     int m_size;
     QList<Segment> m_segments;
     QList<Segment> m_holes;
+
+    void cleanupHoles();
 
     static constexpr auto comp_address_func = [](const Segment &seg1, const Segment &seg2) {
         return seg1.startingAddress() < seg2.startingAddress();
