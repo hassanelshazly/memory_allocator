@@ -15,15 +15,21 @@ class MemoryAllocator
 {
 public:
     MemoryAllocator();
-    static MemoryAllocator makeFromHoles(const QList<Segment>& holes);
+    MemoryAllocator(int size);
+
+    static MemoryAllocator makeFromHoles(const QList<Segment>& holes, int size);
+
+    int getSize() const;
+    void setSize(int size);
 
     QList<Segment> addProcess(const QList<Segment>& process, AllocationType type);
     void deleteProcess(int processId);
     Segment addSegment(const Segment& seg, AllocationType type);
 
     QList<Segment> getHoles();
+
 private:
-    int m_maxSize;
+    int m_size;
     QList<Segment> m_segments;
     QList<Segment> m_holes;
 
