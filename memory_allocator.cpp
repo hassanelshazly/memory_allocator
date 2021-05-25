@@ -76,6 +76,7 @@ void MemoryAllocator::deleteProcess(int processId)
         ++first;
     }
     m_segments.erase(result, m_segments.end());
+    processIds.remove(processId);
     cleanupHoles();
 }
 
@@ -185,6 +186,11 @@ QList<Segment> MemoryAllocator::addProcess(const QList<Segment> &process, Alloca
         throw QString("Empty process");
 
     int processId = process[0].processId();
+
+    if(processIds.contains(processId))
+        throw QString("Already Included Process Id");
+    else
+        processIds.insert(processId);
 
     QList<Segment> list;
     for(const Segment& seg: process) {

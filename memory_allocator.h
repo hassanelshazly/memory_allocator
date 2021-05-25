@@ -39,6 +39,8 @@ private:
     QList<Segment> m_segments;
     QList<Segment> m_holes;
 
+    QSet<int> processIds;
+
     Segment addSegmentIn(
             Segment seg,
             std::function<bool(const Segment&, const Segment&)> comp_func);
