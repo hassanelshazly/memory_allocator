@@ -17,7 +17,7 @@ int HoleModel::rowCount(const QModelIndex &parent) const
 int HoleModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return 3;
+    return 4;
 }
 
 QVariant HoleModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -30,9 +30,11 @@ QVariant HoleModel::headerData(int section, Qt::Orientation orientation, int rol
     case 0:
         return "Id";
     case 1:
-        return "Starting Address";
+        return "Start Address";
     case 2:
         return "Size";
+    case 3:
+        return "Delete";
     }
 
     return QVariant();
@@ -40,26 +42,47 @@ QVariant HoleModel::headerData(int section, Qt::Orientation orientation, int rol
 
 QVariant HoleModel::data(const QModelIndex &index, int role) const
 {
-    if (role != Qt::DisplayRole || !index.isValid())
+    if (!index.isValid() || index.row() >= m_data.size())
         return QVariant();
 
     const Segment &segment = m_data[index.row()];
 
-    switch (index.column()) {
-    case 0:
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        switch (index.column()) {
+        case 0:
+            return segment.processId();
+        case 1:
+            return segment.startingAddress();
+        case 2:
+            return segment.size();
+        case 3:
+            return "Delete";
+        }
+    }
+
+    switch (role) {
+    case IdRole:
         return segment.processId();
-    case 1:
+    case StartAddressRole:
         return segment.startingAddress();
-    case 2:
+    case SizeRole:
         return segment.size();
     }
 
     return QVariant();
 }
 
+Qt::ItemFlags HoleModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return Qt::ItemIsEnabled;
+
+    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+}
+
 bool HoleModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (role != Qt::EditRole || !index.isValid())
+    if (role != Qt::EditRole || !index.isValid() || index.row() >= m_data.size())
         return false;
 
     switch (index.column()) {
@@ -75,16 +98,47 @@ bool HoleModel::setData(const QModelIndex &index, const QVariant &value, int rol
         m_data[index.row()].setSize(value.toInt());
         emit dataChanged(index, index);
         return true;
+    case 3:
+        return removeRow(index.row(), index);
     }
 
     return false;
 }
 
-Qt::ItemFlags HoleModel::flags(const QModelIndex &index) const
-{
-    return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
+bool HoleModel::insertRows(int position, int rows, const QModelIndex &parent) {
+    Q_UNUSED(parent)
+
+    beginInsertRows(QModelIndex(), position, position + rows - 1);
+    for (int row = 0; row < rows; row++)
+        m_data.insert(position, Segment(position, "Hole", position * 20, 10, HOLE));
+    endInsertRows();
+
+    return true;
+}
+
+bool HoleModel::removeRows(int position, int rows, const QModelIndex &parent) {
+    Q_UNUSED(parent)
+
+    beginRemoveRows(QModelIndex(), position, position + rows - 1);
+    for (int row = 0; row < rows; row++)
+        m_data.removeAt(position);
+    endRemoveRows();
+
+    return true;
+}
+
+void HoleModel::addNewHole() {
+    int position = m_data.count();
+
+    beginInsertRows(QModelIndex(), position, position);
+    m_data.append(Segment(position, "Hole", position * 20, 10, HOLE));
+    endInsertRows();
 }
 
 QHash<int, QByteArray> HoleModel::roleNames() const {
-    return { {Qt::DisplayRole, "display"}, {Qt::EditRole, "edit"} };
+    return { {Qt::DisplayRole, "display"},
+             {Qt::EditRole, "edit"},
+             {IdRole, "id"},
+             {StartAddressRole, "start_address"},
+             {SizeRole, "size"} };
 }

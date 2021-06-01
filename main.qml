@@ -1,16 +1,20 @@
 import QtCharts 2.15
 import QtQuick 2.15
-import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 import dev.unordered_team.os_mem_viz 0.1
 
-Window {
-    width: 800
-    height: 600
-    visible: true
-    title: "Memory Allocation"
+Item {
+    id: root
+    width: 1080
+    height: 720
+
+    property var holeModel
+    property var processModel
+
+    signal addNewHole()
+    signal addNewProcess()
 
     RowLayout {
         anchors.fill: parent
@@ -46,12 +50,23 @@ Window {
                 text: "Holes"
                 padding: 4
 
-                Layout.alignment: Qt.AlignHCenter
+                Layout.alignment: Qt.AlignRight
                 Layout.preferredWidth: implicitWidth
                 Layout.preferredHeight: implicitHeight
                 Layout.row: 1
                 Layout.column: 0
-                Layout.columnSpan: 2
+            }
+
+            Button {
+                text: "Add New Hole"
+                padding: 4
+                onClicked: root.addNewHole()
+
+                Layout.alignment: Qt.AlignLeft
+                Layout.preferredWidth: implicitWidth
+                Layout.preferredHeight: implicitHeight
+                Layout.row: 1
+                Layout.column: 1
             }
 
             HorizontalHeaderView {
@@ -70,68 +85,30 @@ Window {
                 clip: true
 
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: 128 * 3
+                Layout.preferredWidth: 96 * 3 + 64
                 Layout.fillHeight: true
                 Layout.row: 3
                 Layout.column: 0
                 Layout.columnSpan: 2
 
-                model: HoleModel {}
+                model: root.holeModel
 
-                delegate: Rectangle {
-                    implicitWidth: 128
-                    implicitHeight: holeLabel.implicitHeight
-                    color: row % 2 == 0 ? "#f2f2f2" : "#ffffff"
-
-                    Label {
-                        id: holeLabel
-                        anchors { verticalCenter: parent.verticalCenter; left: parent.left }
-                        padding: 4
-                        text: display
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            holeLoader.visible = true
-                            holeLoader.item.forceActiveFocus()
-                        }
-                    }
-
+                delegate: Component {
                     Loader {
-                        id: holeLoader
-                        anchors { verticalCenter: parent.verticalCenter; left: parent.left}
-                        height: parent.height
-                        width: parent.width
-                        visible: false
-                        sourceComponent: visible ? holeInput : undefined
+                        id: holeTableLoader
 
-                        Component {
-                            id: holeInput
-                            TextField {
-                                anchors { fill: parent }
-                                text: display
-                                onAccepted:{
-                                    switch(column) {
-                                    case 0:
-                                    case 2:
-                                    case 3:
-                                        edit = parseInt(text, 10)
-                                        break;
-                                    case 1:
-                                        edit = text
-                                        break;
-                                    }
-                                    holeLoader.visible = false
-                                }
+                        property string displayValue: display
+                        property color buttonColor: "#be212b"
+                        property color buttonColorPressed: "#a8171a"
 
-                                onActiveFocusChanged: {
-                                    if (!activeFocus) {
-                                        holeLoader.visible = false
-                                    }
+                        source: switch(column) {
+                                case 0:
+                                case 1:
+                                case 2:
+                                    return "TextCell.qml"
+                                case 3:
+                                    return "ButtonCell.qml"
                                 }
-                            }
-                        }
                     }
                 }
             }
@@ -140,12 +117,23 @@ Window {
                 text: "Processes"
                 padding: 4
 
-                Layout.alignment: Qt.AlignHCenter
+                Layout.alignment: Qt.AlignRight
                 Layout.preferredWidth: implicitWidth
                 Layout.preferredHeight: implicitHeight
                 Layout.row: 4
                 Layout.column: 0
-                Layout.columnSpan: 2
+            }
+
+            Button {
+                text: "Add New Process"
+                padding: 4
+                onClicked: root.addNewProcess()
+
+                Layout.alignment: Qt.AlignLeft
+                Layout.preferredWidth: implicitWidth
+                Layout.preferredHeight: implicitHeight
+                Layout.row: 4
+                Layout.column: 1
             }
 
             HorizontalHeaderView {
@@ -164,68 +152,31 @@ Window {
                 clip: true
 
                 Layout.alignment: Qt.AlignHCenter
-                Layout.preferredWidth: 128 * 3
+                Layout.preferredWidth: 96 * 3 + 64 * 2
                 Layout.fillHeight: true
                 Layout.row: 6
                 Layout.column: 0
                 Layout.columnSpan: 2
 
-                model: ProcessModel {}
+                model: root.processModel
 
-                delegate: Rectangle {
-                    implicitWidth: 128
-                    implicitHeight: processLabel.implicitHeight
-                    color: row % 2 == 0 ? "#f2f2f2" : "#ffffff"
-
-                    Label {
-                        id: processLabel
-                        anchors { verticalCenter: parent.verticalCenter; left: parent.left }
-                        padding: 4
-                        text: display
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            processLoader.visible = true
-                            processLoader.item.forceActiveFocus()
-                        }
-                    }
-
+                delegate: Component {
                     Loader {
-                        id: processLoader
-                        anchors { verticalCenter: parent.verticalCenter; left: parent.left}
-                        height: parent.height
-                        width: parent.width
-                        visible: false
-                        sourceComponent: visible ? processInput : undefined
+                        id: processTableLoader
 
-                        Component {
-                            id: processInput
-                            TextField {
-                                anchors { fill: parent }
-                                text: display
-                                onAccepted:{
-                                    switch(column) {
-                                    case 0:
-                                    case 2:
-                                    case 3:
-                                        edit = parseInt(text, 10)
-                                        break;
-                                    case 1:
-                                        edit = text
-                                        break;
-                                    }
-                                    processLoader.visible = false
-                                }
+                        property string displayValue: display
+                        property color buttonColor: (column == 3) ? "#21be2b" : "#be212b"
+                        property color buttonColorPressed: (column == 3) ? "#17a82b" : "#a8171a"
 
-                                onActiveFocusChanged: {
-                                    if (!activeFocus) {
-                                        processLoader.visible = false
-                                    }
+                        source: switch(column) {
+                                case 0:
+                                case 1:
+                                case 2:
+                                    return "TextCell.qml"
+                                case 3:
+                                case 4:
+                                    return "ButtonCell.qml"
                                 }
-                            }
-                        }
                     }
                 }
             }

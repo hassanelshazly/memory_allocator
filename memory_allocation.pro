@@ -1,4 +1,4 @@
-QT += quick core charts
+QT += quick core charts quickcontrols2
 
 CONFIG += c++17 qmltypes
 
@@ -7,12 +7,14 @@ CONFIG += c++17 qmltypes
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 HEADERS += \
+    controller.h \
     hole_model.h \
     memory_allocator.h \
     process_model.h \
     segment.h
 
 SOURCES += \
+        controller.cpp \
         hole_model.cpp \
         main.cpp \
         memory_allocator.cpp \
