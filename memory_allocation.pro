@@ -12,7 +12,8 @@ HEADERS += \
     memory_allocator.h \
     process_model.h \
     segment.h \
-    segment_model.h
+    segment_model.h \
+    timeline_model.h
 
 SOURCES += \
         controller.cpp \
@@ -22,7 +23,8 @@ SOURCES += \
         process_model.cpp \
         segment.cpp \
         segment_model.cpp \
-        test.cpp
+        test.cpp \
+        timeline_model.cpp
 
 RESOURCES += qml.qrc
 

@@ -43,12 +43,19 @@ Item {
                 }
 
                 TextField {
+                    id: memorySizeInput
+                    text: controller.memorySize
+                    validator: IntValidator {bottom: 0; top: 2147483647;}
+                    focus: true
+
                     Layout.alignment: Qt.AlignVCenter
                     Layout.preferredWidth: parent.width / 2 - 16
                     Layout.preferredHeight: implicitHeight
                     Layout.row: 0
                     Layout.column: 1
                     Layout.margins: 4
+
+                    onAccepted: controller.memorySize = memorySizeInput.text
                 }
 
                 Label {
@@ -90,7 +97,7 @@ Item {
                     clip: true
 
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 96 * 3 + 64
+                    Layout.preferredWidth: 128 * 2 + 128
                     Layout.fillHeight: true
                     Layout.row: 3
                     Layout.column: 0
@@ -107,9 +114,8 @@ Item {
                             source: switch(column) {
                                     case 0:
                                     case 1:
-                                    case 2:
                                         return "TextCell.qml"
-                                    case 3:
+                                    case 2:
                                         return "ButtonCell.qml"
                                     }
                         }
@@ -175,7 +181,7 @@ Item {
                     clip: true
 
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 96 * 2 + 64
+                    Layout.preferredWidth: 128 * 2 + 128
                     Layout.fillHeight: true
                     Layout.row: 2
                     Layout.column: 0
@@ -239,7 +245,7 @@ Item {
                     clip: true
 
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 96 * 1 + 64
+                    Layout.preferredWidth: 128 * 1 + 128
                     Layout.fillHeight: true
                     Layout.row: 6
                     Layout.column: 0
@@ -272,6 +278,9 @@ Item {
                     Layout.row: 7
                     Layout.column: 0
                     Layout.columnSpan: 2
+
+                    currentIndex: controller.allocationType
+                    onActivated: controller.allocationType = currentIndex
                 }
 
                 Button {
@@ -288,18 +297,36 @@ Item {
         }
 
         ChartView {
-            title: "Memory"
-            legend.alignment: Qt.AlignBottom
             antialiasing: true
+            animationOptions: ChartView.AllAnimations
+            theme: ChartView.ChartThemeBrownSand
+            legend.alignment: Qt.AlignBottom
 
             Layout.preferredWidth: parent.width / 2
             Layout.preferredHeight: parent.height
 
+            ValueAxis {
+                id: addressAxis
+                min: 0
+                max: controller.memorySize
+                tickType: ValueAxis.TicksFixed
+                tickCount: 21
+            }
+
             StackedBarSeries {
                 axisX: BarCategoryAxis { categories: ["Memory"] }
-                BarSet { label: "B Text"; values: [5] }
-                BarSet { label: "B Heap"; values: [15] }
-                BarSet { label: "B Stack"; values: [10] }
+                axisY: addressAxis
+
+                labelsVisible: true
+                labelsPosition: AbstractBarSeries.LabelsCenter
+
+                HBarModelMapper {
+                    model: controller.timelineModel
+                    firstBarSetRow: 0
+                    lastBarSetRow: 2147483647
+                    firstColumn: 0
+                    columnCount: 1
+                }
             }
         }
     }

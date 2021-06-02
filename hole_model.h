@@ -13,8 +13,7 @@ public:
     explicit HoleModel(QObject *parent = 0);
 
     enum Role {
-        IdRole = Qt::UserRole + 1,
-        StartAddressRole,
+        StartAddressRole = Qt::UserRole + 1,
         SizeRole
     };
 

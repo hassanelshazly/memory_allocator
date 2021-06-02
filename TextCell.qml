@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle {
-    implicitWidth: 96
+    implicitWidth: 128
     implicitHeight: holeLabel.implicitHeight
     color: row % 2 == 0 ? "#f2f2f2" : "#ffffff"
 

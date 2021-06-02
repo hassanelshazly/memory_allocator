@@ -22,14 +22,45 @@ ProcessModel *Controller::processModel()
     return &m_process_model;
 }
 
-void Controller::visualize()
+TimelineModel *Controller::timelineModel()
 {
-    // TODO call m_allocator.memoryLayout()
+    return &m_timeline_model;
 }
 
 quint32 Controller::stageNumber()
 {
     return m_stage_number;
+}
+
+quint32 Controller::memorySize()
+{
+    return m_memory_size;
+}
+
+void Controller::setMemorySize(quint32 new_size)
+{
+    m_memory_size = new_size;
+    emit memorySizeChanged(new_size);
+}
+
+AllocationType Controller::allocationType()
+{
+    return m_allocation_type;
+}
+
+void Controller::setAllocationType(quint32 new_allocation_type)
+{
+    AllocationType allocation_type = static_cast<AllocationType>(new_allocation_type);
+    m_allocation_type = allocation_type;
+    emit allocationTypeChanged(allocation_type);
+}
+
+void Controller::visualize()
+{
+    QList<Segment> segments = m_allocator.memoryLayout();
+
+    m_timeline_model.clearSegments();
+    m_timeline_model.addSegments(segments);
 }
 
 void Controller::addNewHole()
@@ -51,11 +82,13 @@ void Controller::addNewProcess()
         segment.setProcessId(id);
     m_segment_model.removeRows(0, m_segment_model.rowCount());
 
-    // TODO Use segments here then call visualize(QList<Segment>)
-    // Need the AllocationType;
-    m_allocator.addProcess(segments, AllocationType::BEST_FIT);
-    visualize();
+    try {
+        m_allocator.addProcess(segments, m_allocation_type);
+    } catch (...) {
+        qDebug() << "No space.";
+    }
 
+    visualize();
 }
 
 void Controller::setup()
@@ -65,22 +98,18 @@ void Controller::setup()
 
     QList<Segment> holes = m_hole_model.getSegmentsList();
 
-    // TODO Use holes here then call visualize(QList<Segment>)
-    // Need memory size
-    m_allocator = MemoryAllocator::makeFromHoles(holes, 200);
+    m_allocator = MemoryAllocator::makeFromHoles(holes, m_memory_size);
     visualize();
 }
 
 void Controller::compact()
 {
-    // Done
     m_allocator.compact();
     visualize();
 }
 
 void Controller::processDeleted(int id)
 {
-    // Done Use id here then call visualize(QList<Segment>)
     m_allocator.deleteProcess(id);
     visualize();
 }

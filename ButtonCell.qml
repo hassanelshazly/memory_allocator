@@ -19,7 +19,7 @@ Button {
     }
 
     background: Rectangle {
-        implicitWidth: 64
+        implicitWidth: 128
         implicitHeight: 0
         opacity: enabled ? 1 : 0.3
         border.color: tableButton.down ? "#a8171a" : "#be212b"
