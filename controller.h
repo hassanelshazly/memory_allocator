@@ -6,6 +6,7 @@
 #include "hole_model.h"
 #include "segment_model.h"
 #include "process_model.h"
+#include "memory_allocator.h"
 
 class Controller : public QObject
 {
@@ -20,6 +21,8 @@ public:
     HoleModel *holeModel();
     SegmentModel *segmentModel();
     ProcessModel *processModel();
+
+    void visualize();
 
     quint32 stageNumber();
 
@@ -42,6 +45,8 @@ private:
     ProcessModel m_process_model;
 
     quint32 m_stage_number = 0;
+
+    MemoryAllocator m_allocator;
 };
 
 #endif // CONTROLLER_H

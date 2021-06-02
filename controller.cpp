@@ -22,6 +22,11 @@ ProcessModel *Controller::processModel()
     return &m_process_model;
 }
 
+void Controller::visualize()
+{
+    // TODO call m_allocator.memoryLayout()
+}
+
 quint32 Controller::stageNumber()
 {
     return m_stage_number;
@@ -47,6 +52,10 @@ void Controller::addNewProcess()
     m_segment_model.removeRows(0, m_segment_model.rowCount());
 
     // TODO Use segments here then call visualize(QList<Segment>)
+    // Need the AllocationType;
+    m_allocator.addProcess(segments, AllocationType::BEST_FIT);
+    visualize();
+
 }
 
 void Controller::setup()
@@ -57,14 +66,21 @@ void Controller::setup()
     QList<Segment> holes = m_hole_model.getSegmentsList();
 
     // TODO Use holes here then call visualize(QList<Segment>)
+    // Need memory size
+    m_allocator = MemoryAllocator::makeFromHoles(holes, 200);
+    visualize();
 }
 
 void Controller::compact()
 {
-    // TODO
+    // Done
+    m_allocator.compact();
+    visualize();
 }
 
 void Controller::processDeleted(int id)
 {
-    // TODO Use id here then call visualize(QList<Segment>)
+    // Done Use id here then call visualize(QList<Segment>)
+    m_allocator.deleteProcess(id);
+    visualize();
 }

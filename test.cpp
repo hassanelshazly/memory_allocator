@@ -75,4 +75,8 @@ void testAlgorithm() {
                                      AllocationType::WORST_FIT);
     qDebug() << allocator;
 
+    qDebug() << "\nTotal Memory;";
+    for(auto& item : allocator.memoryLayout())
+        qDebug() << item << "\n";
+
 }

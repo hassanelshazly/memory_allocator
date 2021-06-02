@@ -124,6 +124,13 @@ QList<Segment> MemoryAllocator::holes() const
     return m_holes;
 }
 
+QList<Segment> MemoryAllocator::memoryLayout() const
+{
+    QList<Segment> memory = m_segments + m_holes;
+    std::sort(memory.begin(), memory.end(), comp_address_func);
+    return memory;
+}
+
 Segment MemoryAllocator::addSegmentIn(
         Segment seg,
         std::function<bool(const Segment&, const Segment&)> comp_func)

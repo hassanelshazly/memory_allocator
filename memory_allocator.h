@@ -32,6 +32,8 @@ public:
     QList<Segment> segments() const;
     QList<Segment> holes() const;
 
+    QList<Segment> memoryLayout() const;
+
     friend QDebug operator<<(QDebug dbg, const MemoryAllocator &allocator);
 
 private:
