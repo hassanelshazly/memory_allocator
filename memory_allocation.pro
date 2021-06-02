@@ -1,6 +1,6 @@
 QT += quick core charts quickcontrols2
 
-CONFIG += c++17 qmltypes
+CONFIG += c++17
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -11,7 +11,8 @@ HEADERS += \
     hole_model.h \
     memory_allocator.h \
     process_model.h \
-    segment.h
+    segment.h \
+    segment_model.h
 
 SOURCES += \
         controller.cpp \
@@ -20,14 +21,10 @@ SOURCES += \
         memory_allocator.cpp \
         process_model.cpp \
         segment.cpp \
+        segment_model.cpp \
         test.cpp
 
 RESOURCES += qml.qrc
-
-INCLUDEPATH += com/unordered_team/os_mem_viz
-
-QML_IMPORT_NAME = dev.unordered_team.os_mem_viz
-QML_IMPORT_MAJOR_VERSION = 0
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =

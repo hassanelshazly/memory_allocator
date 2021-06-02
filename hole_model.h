@@ -9,8 +9,6 @@
 class HoleModel : public QAbstractTableModel
 {
     Q_OBJECT
-    QML_ELEMENT
-    QML_ADDED_IN_MINOR_VERSION(1)
 public:
     explicit HoleModel(QObject *parent = 0);
 
@@ -33,6 +31,8 @@ public:
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
 
     void addNewHole();
+
+    QList<Segment> getSegmentsList();
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

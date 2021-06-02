@@ -1,5 +1,7 @@
 #include <QApplication>
 #include <QQuickView>
+#include <QQmlEngine>
+#include <QQmlContext>
 #include <QQuickItem>
 
 #include "controller.h"
@@ -20,17 +22,21 @@ int main(int argc, char *argv[])
     Controller controller;
 
     view.setResizeMode(QQuickView::SizeRootObjectToView);
-    view.setInitialProperties({
-                            {"holeModel", QVariant::fromValue(controller.holeModel())},
-                            {"processModel", QVariant::fromValue(controller.processModel())}
-                              });
+    view.engine()->rootContext()->setContextProperty("controller", &controller);
     view.setSource(QUrl(QStringLiteral("qrc:main.qml")));
 
     QObject *item = view.rootObject();
     QObject::connect(item, SIGNAL(addNewHole()),
                      &controller, SLOT(addNewHole()));
+    QObject::connect(item, SIGNAL(addNewSegment()),
+                     &controller, SLOT(addNewSegment()));
     QObject::connect(item, SIGNAL(addNewProcess()),
                      &controller, SLOT(addNewProcess()));
+
+    QObject::connect(item, SIGNAL(setup()),
+                     &controller, SLOT(setup()));
+    QObject::connect(item, SIGNAL(compact()),
+                     &controller, SLOT(compact()));
 
     view.show();
     return app.exec();

@@ -1,17 +1,20 @@
-#ifndef PROCESS_MODEL_H
-#define PROCESS_MODEL_H
+#ifndef SEGMENT_MODEL_H
+#define SEGMENT_MODEL_H
 
 #include <QtQml/qqml.h>
 #include <QtCore/QAbstractTableModel>
 
-class ProcessModel : public QAbstractTableModel
+#include "segment.h"
+
+class SegmentModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
-    explicit ProcessModel(QObject *parent = 0);
+    explicit SegmentModel(QObject *parent = 0);
 
     enum Role {
-        NameRole = Qt::UserRole + 1
+        NameRole = Qt::UserRole + 1,
+        SizeRole
     };
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -26,18 +29,15 @@ public:
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
 
-    int addNewProcess();
+    void addNewSegment();
 
-signals:
-    void processDeleted(int id);
+    QList<Segment> getSegmentsList();
 
 protected:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    QList<int> m_data;
-
-    static int currentId;
+    QList<Segment> m_data;
 };
 
-#endif // PROCESS_MODEL_H
+#endif // SEGMENT_MODEL_H
