@@ -31,6 +31,9 @@ public:
 
     int addNewProcess(QList<Segment> segments);
 
+    int id() const;
+    void setId(int id);
+
 signals:
     void processDeleted(int id);
 
@@ -40,7 +43,7 @@ protected:
 private:
     QList<Segment> m_data;
 
-    static int currentId;
+    int currentId;
 };
 
 #endif // PROCESS_MODEL_H

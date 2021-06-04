@@ -113,6 +113,7 @@ void Controller::setup()
 
     try {
         m_allocator = MemoryAllocator::makeFromHoles(holes, m_memory_size);
+        m_process_model.setId(m_allocator.segments().size());
         visualize();
 
         m_stage_number = 1;

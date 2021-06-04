@@ -46,10 +46,13 @@ MemoryAllocator MemoryAllocator::makeFromHoles(const QList<Segment> &holes, int 
                     segmentSize,
                     SegmentType::PROCESS);
 
-        if(segmentSize < 0)
+        if(segmentSize < 0) {
             throw QString("Overlaping holes");
-        else if (segmentSize > 0)
+        }
+        else if (segmentSize > 0) {
             allocator.m_segments.push_back(seg);
+            allocator.processIds.insert(id - 1);
+        }
     }
 
     return allocator;

@@ -4,8 +4,6 @@
 
 #include "segment.h"
 
-int ProcessModel::currentId = 0;
-
 ProcessModel::ProcessModel(QObject *parent) :
     QAbstractTableModel(parent)
 {
@@ -127,7 +125,7 @@ bool ProcessModel::removeRows(int position, int rows, const QModelIndex &parent)
 
 int ProcessModel::addNewProcess(QList<Segment> segments) {
     int position = m_data.count();
-    int id = ProcessModel::currentId++;
+    int id = currentId++;
 
     for (auto &segment: segments)
         segment.setProcessId(id);
@@ -137,6 +135,16 @@ int ProcessModel::addNewProcess(QList<Segment> segments) {
     endInsertRows();
 
     return id;
+}
+
+int ProcessModel::id() const
+{
+    return currentId;
+}
+
+void ProcessModel::setId(int id)
+{
+    currentId = id;
 }
 
 QHash<int, QByteArray> ProcessModel::roleNames() const {
