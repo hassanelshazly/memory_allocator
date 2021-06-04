@@ -37,16 +37,7 @@ Rectangle {
                 anchors { fill: parent }
                 text: display
                 onAccepted:{
-                    switch(column) {
-                    case 0:
-                    case 2:
-                    case 3:
-                        edit = parseInt(text, 10)
-                        break;
-                    case 1:
-                        edit = text
-                        break;
-                    }
+                    edit = text
                     holeLoader.visible = false
                 }
 

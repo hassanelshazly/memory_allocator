@@ -1,5 +1,9 @@
 #include "controller.h"
 
+#include <exception>
+#include <typeinfo>
+#include <stdexcept>
+
 Controller::Controller(QObject *parent)
     : QObject(parent)
 {
@@ -55,12 +59,25 @@ void Controller::setAllocationType(quint32 new_allocation_type)
     emit allocationTypeChanged(allocation_type);
 }
 
+QString Controller::status()
+{
+    return m_status;
+}
+
+void Controller::setStatus(QString new_status)
+{
+    m_status = new_status;
+    emit statusChanged(new_status);
+}
+
 void Controller::visualize()
 {
     QList<Segment> segments = m_allocator.memoryLayout();
 
     m_timeline_model.clearSegments();
     m_timeline_model.addSegments(segments);
+
+    setStatus("Status: OK");
 }
 
 void Controller::addNewHole()
@@ -75,41 +92,52 @@ void Controller::addNewSegment()
 
 void Controller::addNewProcess()
 {
-    int id = m_process_model.addNewProcess();
-
     QList<Segment> segments = m_segment_model.getSegmentsList();
-    for (auto &segment: segments)
-        segment.setProcessId(id);
-    m_segment_model.removeRows(0, m_segment_model.rowCount());
+    m_process_model.addNewProcess(segments);
 
     try {
         m_allocator.addProcess(segments, m_allocation_type);
-    } catch (...) {
-        qDebug() << "No space.";
-    }
+        visualize();
 
-    visualize();
+        m_segment_model.removeRows(0, m_segment_model.rowCount());
+    } catch (const QString &e) {
+        setStatus(e);
+
+        m_process_model.removeRow(m_process_model.rowCount() - 1);
+    }
 }
 
 void Controller::setup()
 {
-    m_stage_number = 1;
-    emit stageNumberChanged();
-
     QList<Segment> holes = m_hole_model.getSegmentsList();
 
-    m_allocator = MemoryAllocator::makeFromHoles(holes, m_memory_size);
-    visualize();
+    try {
+        m_allocator = MemoryAllocator::makeFromHoles(holes, m_memory_size);
+        visualize();
+
+        m_stage_number = 1;
+        emit stageNumberChanged();
+    }  catch (const QString &e) {
+        setStatus(e);
+    }
 }
 
 void Controller::compact()
 {
-    m_allocator.compact();
-    visualize();
+    try {
+        m_allocator.compact();
+        visualize();
+    }  catch (const QString &e) {
+        setStatus(e);
+    }
 }
 
 void Controller::processDeleted(int id)
 {
-    m_allocator.deleteProcess(id);
-    visualize();
+    try {
+        m_allocator.deleteProcess(id);
+        visualize();
+    }  catch (const QString &e) {
+        setStatus(e);
+    }
 }

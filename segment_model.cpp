@@ -79,8 +79,6 @@ bool SegmentModel::setData(const QModelIndex &index, const QVariant &value, int 
     if (role != Qt::EditRole || !index.isValid() || index.row() >= m_data.size())
         return false;
 
-    qDebug() << value.toString();
-
     switch (index.column()) {
     case 0:
         m_data[index.row()].setName(value.toString());

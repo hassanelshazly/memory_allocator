@@ -4,6 +4,8 @@
 #include <QtQml/qqml.h>
 #include <QtCore/QAbstractTableModel>
 
+#include "segment.h"
+
 class ProcessModel : public QAbstractTableModel
 {
     Q_OBJECT
@@ -11,7 +13,8 @@ public:
     explicit ProcessModel(QObject *parent = 0);
 
     enum Role {
-        NameRole = Qt::UserRole + 1
+        NameRole = Qt::UserRole + 1,
+        SizeRole
     };
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -26,7 +29,7 @@ public:
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
 
-    int addNewProcess();
+    int addNewProcess(QList<Segment> segments);
 
 signals:
     void processDeleted(int id);
@@ -35,7 +38,7 @@ protected:
     QHash<int, QByteArray> roleNames() const override;
 
 private:
-    QList<int> m_data;
+    QList<Segment> m_data;
 
     static int currentId;
 };

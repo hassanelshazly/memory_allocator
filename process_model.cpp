@@ -1,5 +1,7 @@
 #include "process_model.h"
 
+#include <algorithm>
+
 #include "segment.h"
 
 int ProcessModel::currentId = 0;
@@ -18,7 +20,7 @@ int ProcessModel::rowCount(const QModelIndex &parent) const
 int ProcessModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent)
-    return 2;
+    return 3;
 }
 
 QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -31,7 +33,9 @@ QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int 
     case 0:
         return "Name";
     case 1:
-        return "Delete";
+        return "Size";
+    case 2:
+        return "Action";
     }
 
     return QVariant();
@@ -42,20 +46,24 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     if (!index.isValid() || index.row() >= m_data.size())
         return QVariant();
 
-    const int &process = m_data[index.row()];
+    const Segment &segment = m_data[index.row()];
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         switch (index.column()) {
         case 0:
-            return QStringLiteral("P%1").arg(process);
+            return QStringLiteral("P%1 %2").arg(segment.processId()).arg(segment.name());
         case 1:
-            return "Delete";
+            return segment.size();
+        case 2:
+            return "Delete Process";
         }
     }
 
     switch (role) {
     case NameRole:
-        return QStringLiteral("P%1").arg(process);
+        return QStringLiteral("P%1 %2").arg(segment.processId()).arg(segment.name());
+    case SizeRole:
+        return segment.size();
     }
 
     return QVariant();
@@ -66,7 +74,7 @@ Qt::ItemFlags ProcessModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::ItemIsEnabled;
 
-    if (index.column() != 1)
+    if (index.column() != 2)
         return QAbstractItemModel::flags(index);
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEditable;
@@ -79,13 +87,16 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
     if (role != Qt::EditRole || !index.isValid())
         return false;
 
-    const int &process = m_data[index.row()];
+    const Segment &segment = m_data[index.row()];
 
     switch (index.column()) {
-    case 1:
-        bool status = removeRow(index.row(), index);
+    case 2:
+        bool status = true;
+        for (int i = m_data.size() - 1; i >= 0; i--)
+            if (m_data[i].processId() == segment.processId())
+                status &= removeRow(i, index);
         if (status)
-            emit processDeleted(process);
+            emit processDeleted(segment.processId());
         return status;
     }
 
@@ -97,7 +108,7 @@ bool ProcessModel::insertRows(int position, int rows, const QModelIndex &parent)
 
     beginInsertRows(QModelIndex(), position, position + rows - 1);
     for (int row = 0; row < rows; row++)
-        m_data.insert(position, ProcessModel::currentId++);
+        m_data.insert(position, Segment(ProcessModel::currentId++, "Enter Name", 0, PROCESS));
     endInsertRows();
 
     return true;
@@ -114,12 +125,15 @@ bool ProcessModel::removeRows(int position, int rows, const QModelIndex &parent)
     return true;
 }
 
-int ProcessModel::addNewProcess() {
+int ProcessModel::addNewProcess(QList<Segment> segments) {
     int position = m_data.count();
     int id = ProcessModel::currentId++;
 
-    beginInsertRows(QModelIndex(), position, position);
-    m_data.append(id);
+    for (auto &segment: segments)
+        segment.setProcessId(id);
+
+    beginInsertRows(QModelIndex(), position, position + segments.size() - 1);
+    m_data.append(segments);
     endInsertRows();
 
     return id;
@@ -128,5 +142,6 @@ int ProcessModel::addNewProcess() {
 QHash<int, QByteArray> ProcessModel::roleNames() const {
     return { {Qt::DisplayRole, "display"},
              {Qt::EditRole, "edit"},
-             {NameRole, "name"} };
+             {NameRole, "name"},
+             {SizeRole, "size"}};
 }

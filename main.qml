@@ -122,13 +122,26 @@ Item {
                     }
                 }
 
+                Label {
+                    text: controller.status
+
+                    Layout.preferredWidth: parent.width - 16
+                    Layout.preferredHeight: implicitHeight
+                    Layout.row: 4
+                    Layout.column: 0
+                    Layout.columnSpan: 2
+                    Layout.margins: 4
+
+                    horizontalAlignment: Text.AlignHCenter
+                }
+
                 Button {
                     text: "Setup"
                     onClicked: root.setup()
 
                     Layout.preferredWidth: parent.width - 16
                     Layout.preferredHeight: implicitHeight
-                    Layout.row: 4
+                    Layout.row: 5
                     Layout.column: 0
                     Layout.columnSpan: 2
                     Layout.margins: 4
@@ -211,11 +224,12 @@ Item {
                     onClicked: root.addNewProcess()
 
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: parent.width
+                    Layout.preferredWidth: parent.width - 16
                     Layout.preferredHeight: implicitHeight
                     Layout.row: 3
                     Layout.column: 0
                     Layout.columnSpan: 2
+                    Layout.margins: 4
                 }
 
                 Label {
@@ -245,7 +259,7 @@ Item {
                     clip: true
 
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 128 * 1 + 128
+                    Layout.preferredWidth: 128 * 2 + 128
                     Layout.fillHeight: true
                     Layout.row: 6
                     Layout.column: 0
@@ -261,8 +275,9 @@ Item {
 
                             source: switch(column) {
                                     case 0:
-                                        return "TextCell.qml"
                                     case 1:
+                                        return "TextCell.qml"
+                                    case 2:
                                         return "ButtonCell.qml"
                                     }
                         }
@@ -272,15 +287,29 @@ Item {
                 ComboBox {
                     model: ["First Fit", "Best Fit", "Worst Fit"]
 
-                    Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 128 * 3
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: parent.width / 2 - 16
                     Layout.preferredHeight: implicitHeight
                     Layout.row: 7
                     Layout.column: 0
-                    Layout.columnSpan: 2
+                    Layout.margins: 4
 
                     currentIndex: controller.allocationType
                     onActivated: controller.allocationType = currentIndex
+                }
+
+                Label {
+                    text: controller.status
+
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.preferredWidth: parent.width / 2 - 16
+                    Layout.preferredHeight: implicitHeight
+                    Layout.row: 7
+                    Layout.column: 1
+                    Layout.margins: 4
+
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 Button {

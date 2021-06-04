@@ -19,6 +19,7 @@ class Controller : public QObject
     Q_PROPERTY(quint32 stageNumber READ stageNumber NOTIFY stageNumberChanged)
     Q_PROPERTY(quint32 memorySize READ memorySize WRITE setMemorySize NOTIFY memorySizeChanged)
     Q_PROPERTY(quint32 allocationType READ allocationType WRITE setAllocationType NOTIFY allocationTypeChanged)
+    Q_PROPERTY(QString status READ status WRITE setStatus NOTIFY statusChanged)
 public:
     explicit Controller(QObject *parent = nullptr);
 
@@ -34,6 +35,9 @@ public:
 
     AllocationType allocationType();
     void setAllocationType(quint32 new_allocation_type);
+
+    QString status();
+    void setStatus(QString new_status);
 
     void visualize();
 
@@ -51,6 +55,7 @@ signals:
     void stageNumberChanged();
     void memorySizeChanged(quint32);
     void allocationTypeChanged(AllocationType);
+    void statusChanged(QString);
 
 private:
     HoleModel m_hole_model;
@@ -61,6 +66,7 @@ private:
     quint32 m_stage_number = 0;
     quint32 m_memory_size = 200;
     AllocationType m_allocation_type = WORST_FIT;
+    QString m_status = "Status: OK";
 
     MemoryAllocator m_allocator;
 };

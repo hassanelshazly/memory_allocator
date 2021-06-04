@@ -15,12 +15,15 @@ int TimelineModel::rowCount(const QModelIndex &parent) const
 
 QVariant TimelineModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
+    if (role != Qt::DisplayRole || orientation != Qt::Vertical)
         return QVariant();
 
     const Segment &segment = m_data[section];
 
-    return QStringLiteral("P%1 %2").arg(segment.processId()).arg(segment.name());
+    if (segment.type() == HOLE)
+        return "Hole";
+    else
+        return QStringLiteral("P%1 %2").arg(segment.processId()).arg(segment.name());
 }
 
 QVariant TimelineModel::data(const QModelIndex &index, int role) const
