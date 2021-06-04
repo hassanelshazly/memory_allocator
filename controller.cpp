@@ -1,8 +1,7 @@
 #include "controller.h"
 
-#include <exception>
-#include <typeinfo>
-#include <stdexcept>
+#include <algorithm>
+#include <iterator>
 
 Controller::Controller(QObject *parent)
     : QObject(parent)
@@ -34,6 +33,12 @@ TimelineModel *Controller::timelineModel()
 quint32 Controller::stageNumber()
 {
     return m_stage_number;
+}
+
+void Controller::setStageNumber(quint32 new_stage_number)
+{
+    m_stage_number = new_stage_number;
+    emit stageNumberChanged(new_stage_number);
 }
 
 quint32 Controller::memorySize()
@@ -73,9 +78,17 @@ void Controller::setStatus(QString new_status)
 void Controller::visualize()
 {
     QList<Segment> segments = m_allocator.memoryLayout();
+    QList<Segment> processes_segments;
+
+    std::copy_if(segments.begin(), segments.end(), std::back_inserter(processes_segments), [](Segment segment) {
+        return segment.type() == PROCESS;
+    });
 
     m_timeline_model.clearSegments();
     m_timeline_model.addSegments(segments);
+
+    m_process_model.clearSegments();
+    m_process_model.updateSegments(processes_segments);
 
     setStatus("Status: OK");
 }
@@ -93,7 +106,6 @@ void Controller::addNewSegment()
 void Controller::addNewProcess()
 {
     QList<Segment> segments = m_segment_model.getSegmentsList();
-    m_process_model.addNewProcess(segments);
 
     try {
         m_allocator.addProcess(segments, m_allocation_type);
@@ -102,8 +114,6 @@ void Controller::addNewProcess()
         m_segment_model.removeRows(0, m_segment_model.rowCount());
     } catch (const QString &e) {
         setStatus(e);
-
-        m_process_model.removeRow(m_process_model.rowCount() - 1);
     }
 }
 
@@ -113,11 +123,9 @@ void Controller::setup()
 
     try {
         m_allocator = MemoryAllocator::makeFromHoles(holes, m_memory_size);
-        m_process_model.setId(m_allocator.segments().size());
         visualize();
 
-        m_stage_number = 1;
-        emit stageNumberChanged();
+        setStageNumber(1);
     }  catch (const QString &e) {
         setStatus(e);
     }

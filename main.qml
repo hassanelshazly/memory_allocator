@@ -259,7 +259,7 @@ Item {
                     clip: true
 
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: 128 * 2 + 128
+                    Layout.preferredWidth: 128 * 3 + 128
                     Layout.fillHeight: true
                     Layout.row: 6
                     Layout.column: 0
@@ -276,8 +276,9 @@ Item {
                             source: switch(column) {
                                     case 0:
                                     case 1:
-                                        return "TextCell.qml"
                                     case 2:
+                                        return "TextCell.qml"
+                                    case 3:
                                         return "ButtonCell.qml"
                                     }
                         }
@@ -314,6 +315,7 @@ Item {
 
                 Button {
                     text: "Compact"
+                    onClicked: root.compact()
 
                     Layout.preferredWidth: parent.width - 16
                     Layout.preferredHeight: implicitHeight

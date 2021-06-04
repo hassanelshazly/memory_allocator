@@ -14,6 +14,7 @@ public:
 
     enum Role {
         NameRole = Qt::UserRole + 1,
+        StartAddressRole,
         SizeRole
     };
 
@@ -29,10 +30,8 @@ public:
     bool insertRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
     bool removeRows(int position, int rows, const QModelIndex &index = QModelIndex()) override;
 
-    int addNewProcess(QList<Segment> segments);
-
-    int id() const;
-    void setId(int id);
+    void clearSegments();
+    void updateSegments(QList<Segment> segments);
 
 signals:
     void processDeleted(int id);
@@ -42,8 +41,6 @@ protected:
 
 private:
     QList<Segment> m_data;
-
-    int currentId;
 };
 
 #endif // PROCESS_MODEL_H

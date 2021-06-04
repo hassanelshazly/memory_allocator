@@ -16,7 +16,7 @@ class Controller : public QObject
     Q_PROPERTY(SegmentModel *segmentModel READ segmentModel)
     Q_PROPERTY(ProcessModel *processModel READ processModel)
     Q_PROPERTY(TimelineModel *timelineModel READ timelineModel)
-    Q_PROPERTY(quint32 stageNumber READ stageNumber NOTIFY stageNumberChanged)
+    Q_PROPERTY(quint32 stageNumber READ stageNumber WRITE setStageNumber NOTIFY stageNumberChanged)
     Q_PROPERTY(quint32 memorySize READ memorySize WRITE setMemorySize NOTIFY memorySizeChanged)
     Q_PROPERTY(quint32 allocationType READ allocationType WRITE setAllocationType NOTIFY allocationTypeChanged)
     Q_PROPERTY(QString status READ status WRITE setStatus NOTIFY statusChanged)
@@ -29,6 +29,7 @@ public:
     TimelineModel *timelineModel();
 
     quint32 stageNumber();
+    void setStageNumber(quint32 new_stage_number);
 
     quint32 memorySize();
     void setMemorySize(quint32 new_size);
@@ -52,7 +53,7 @@ public slots:
     void processDeleted(int id);
 
 signals:
-    void stageNumberChanged();
+    void stageNumberChanged(quint32);
     void memorySizeChanged(quint32);
     void allocationTypeChanged(AllocationType);
     void statusChanged(QString);
