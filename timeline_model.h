@@ -21,6 +21,7 @@ public:
 
 private:
     QList<Segment> m_data;
+    QStringList stringList;
 };
 
 #endif // TIMELINE_MODEL_H

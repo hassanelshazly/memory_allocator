@@ -43,6 +43,8 @@ private:
 
     QSet<int> processIds;
 
+    int id;
+
     Segment addSegmentIn(
             Segment seg,
             std::function<bool(const Segment&, const Segment&)> comp_func);

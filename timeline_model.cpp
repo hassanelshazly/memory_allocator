@@ -35,6 +35,7 @@ QVariant TimelineModel::data(const QModelIndex &index, int role) const
 
     if (role == Qt::DisplayRole) {
         return segment.size();
+//        return QVariant::fromValue(segment.name());
     }
 
     return QVariant();

@@ -2,13 +2,13 @@
 
 MemoryAllocator::MemoryAllocator()
 {
-
+    id = 0;
 }
 
 MemoryAllocator::MemoryAllocator(int size)
     :  m_size(size)
 {
-
+    id = 0;
 }
 
 MemoryAllocator MemoryAllocator::makeFromHoles(const QList<Segment> &holes, int size)
@@ -24,14 +24,15 @@ MemoryAllocator MemoryAllocator::makeFromHoles(const QList<Segment> &holes, int 
         throw QString("A hole exceded the allocated size");
 
     // make the reminder segments processes
-    int id = 0;
+//    int id = 0;
     if (allocator.m_holes[0].startingAddress() != 0) {
-        Segment seg(id++,
+        Segment seg(allocator.id++,
                     "Old Process",
                     0,
                     allocator.m_holes[0].startingAddress(),
                 SegmentType::PROCESS);
         allocator.m_segments.push_back(seg);
+        allocator.processIds.insert(allocator.id - 1);
     }
 
     for(int i = 1, n = allocator.m_holes.size(); i < n + 1; i++) {
@@ -40,7 +41,7 @@ MemoryAllocator MemoryAllocator::makeFromHoles(const QList<Segment> &holes, int 
                     size - startingAddress :
                     allocator.m_holes[i].startingAddress() - startingAddress;
 
-        Segment seg(id++,
+        Segment seg(allocator.id++,
                     "Old Process",
                     startingAddress,
                     segmentSize,
@@ -51,7 +52,7 @@ MemoryAllocator MemoryAllocator::makeFromHoles(const QList<Segment> &holes, int 
         }
         else if (segmentSize > 0) {
             allocator.m_segments.push_back(seg);
-            allocator.processIds.insert(id - 1);
+            allocator.processIds.insert(allocator.id - 1);
         }
     }
 
@@ -195,31 +196,33 @@ QList<Segment> MemoryAllocator::addProcess(const QList<Segment> &process, Alloca
     if(!process.size())
         throw QString("Empty process");
 
-    int processId = process[0].processId();
+//    int processId = process[0].processId();
 
-    if(processIds.contains(processId))
-        throw QString("Already Included Process Id");
-    else
-        processIds.insert(processId);
+//    if(processIds.contains(processId))
+//        throw QString("Already Included Process Id");
+//    else
+//        processIds.insert(processId);
 
     QList<Segment> list;
     for(const Segment& seg: process) {
-        if(seg.processId() != processId) {
-            deleteProcess(processId);
-            throw QString("Process Id doesn't match between segments");
-        }
-        if(seg.type() != SegmentType::PROCESS) {
-            deleteProcess(processId);
+         Segment local_seg = seg;
+         local_seg.setProcessId(id);
+//        if(seg.processId() != processId) {
+//            deleteProcess(processId);
+//            throw QString("Process Id doesn't match between segments");
+//        }
+        if(local_seg.type() != SegmentType::PROCESS) {
+            deleteProcess(id);
             throw QString("Expected Process not Hole");
         }
         try {
-            list.push_back(addSegment(seg, type));
+            list.push_back(addSegment(local_seg, type));
         }  catch (...){
-            deleteProcess(processId);
+            deleteProcess(id);
             throw QString("One or more segments doesn't fit im memory");
         }
     }
-
+    id++;
     return list;
 }
 
