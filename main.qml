@@ -15,6 +15,11 @@ Item {
     signal setup()
     signal compact()
 
+    Pane {
+        anchors.fill: parent
+        focusPolicy: Qt.ClickFocus
+    }
+
     RowLayout {
         anchors.fill: parent
 
@@ -55,7 +60,13 @@ Item {
                     Layout.column: 1
                     Layout.margins: 4
 
-                    onAccepted: controller.memorySize = memorySizeInput.text
+                    onEditingFinished: controller.memorySize = memorySizeInput.text
+                    Keys.onPressed: {
+                        if (event.key == Qt.Key_Escape) {
+                            focus = false
+                            event.accepted = true;
+                        }
+                    }
                 }
 
                 Label {
@@ -342,6 +353,7 @@ Item {
                 max: controller.memorySize
                 tickType: ValueAxis.TicksFixed
                 tickCount: 21
+                reverse: true
             }
 
             StackedBarSeries {

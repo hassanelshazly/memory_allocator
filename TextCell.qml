@@ -36,9 +36,16 @@ Rectangle {
             TextField {
                 anchors { fill: parent }
                 text: display
-                onAccepted:{
+                onEditingFinished:{
                     edit = text
                     holeLoader.visible = false
+                }
+
+                Keys.onPressed: {
+                    if (event.key == Qt.Key_Escape) {
+                        focus = false
+                        event.accepted = true;
+                    }
                 }
 
                 onActiveFocusChanged: {

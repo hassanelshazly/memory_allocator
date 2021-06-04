@@ -38,6 +38,6 @@ int main(int argc, char *argv[])
     QObject::connect(item, SIGNAL(compact()),
                      &controller, SLOT(compact()));
 
-    view.show();
+    view.showMaximized();
     return app.exec();
 }
