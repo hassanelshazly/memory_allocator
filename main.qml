@@ -357,6 +357,7 @@ Item {
             }
 
             StackedBarSeries {
+                id: timelineSeries
                 axisX: BarCategoryAxis { categories: ["Memory"] }
                 axisY: addressAxis
 
@@ -369,6 +370,20 @@ Item {
                     lastBarSetRow: 2147483647
                     firstColumn: 0
                     columnCount: 1
+                }
+
+                onCountChanged: {
+                    const ids = controller.timelineModel.ids()
+                    let holeColor = undefined;
+                    for (let i = 0; i < timelineSeries.count; i++) {
+                        if (ids[i] === -1) {
+                            if (holeColor) {
+                                timelineSeries.at(i).color = holeColor;
+                            } else {
+                                holeColor = timelineSeries.at(i).color
+                            }
+                        }
+                    }
                 }
             }
         }

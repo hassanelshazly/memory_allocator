@@ -19,6 +19,8 @@ public:
     void addSegments(const QList<Segment> &segments);
     void clearSegments(void);
 
+    Q_INVOKABLE QVariant ids() const;
+
 private:
     QList<Segment> m_data;
 };

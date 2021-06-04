@@ -58,3 +58,11 @@ void TimelineModel::clearSegments()
     m_data.clear();
     endResetModel();
 }
+
+Q_INVOKABLE QVariant TimelineModel::ids() const
+{
+    QList<qint32> ids;
+    for (const auto &segment: m_data)
+        ids.append(segment.processId());
+    return QVariant::fromValue(ids);
+}
