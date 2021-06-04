@@ -22,7 +22,7 @@ public:
     int size() const;
     void setSize(int size);
 
-    QList<Segment> addProcess(const QList<Segment>& process, AllocationType type);
+    QList<Segment> addProcess(QList<Segment> process, AllocationType type);
     void deleteProcess(int processId);
     Segment addSegment(const Segment& seg, AllocationType type);
 
@@ -40,8 +40,6 @@ private:
     int m_size;
     QList<Segment> m_segments;
     QList<Segment> m_holes;
-
-    QSet<int> processIds;
 
     int id;
 
