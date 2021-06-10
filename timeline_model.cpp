@@ -37,6 +37,17 @@ QVariant TimelineModel::data(const QModelIndex &index, int role) const
         return segment.size();
     }
 
+    switch (role) {
+    case IdRole:
+        return segment.processId();
+    case NameRole:
+        return segment.name();
+    case StartAddressRole:
+        return segment.startingAddress();
+    case SizeRole:
+        return segment.size();
+    }
+
     return QVariant();
 }
 
@@ -65,4 +76,13 @@ Q_INVOKABLE QVariant TimelineModel::ids() const
     for (const auto &segment: m_data)
         ids.append(segment.processId());
     return QVariant::fromValue(ids);
+}
+
+QHash<int, QByteArray> TimelineModel::roleNames() const {
+    return { {Qt::DisplayRole, "display"},
+             {Qt::EditRole, "edit"},
+             {IdRole, "id"},
+             {NameRole, "name"},
+             {StartAddressRole, "start_address"},
+             {SizeRole, "size"} };
 }

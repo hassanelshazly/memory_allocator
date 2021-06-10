@@ -338,54 +338,99 @@ Item {
             }
         }
 
-        ChartView {
-            antialiasing: true
-            animationOptions: ChartView.AllAnimations
-            theme: ChartView.ChartThemeBrownSand
-            legend.alignment: Qt.AlignBottom
-
-            Layout.preferredWidth: parent.width / 2
-            Layout.preferredHeight: parent.height
-
-            ValueAxis {
-                id: addressAxis
-                min: 0
-                max: controller.memorySize
-                tickType: ValueAxis.TicksFixed
-                tickCount: 21
-                reverse: true
-            }
-
-            StackedBarSeries {
-                id: timelineSeries
-                axisX: BarCategoryAxis { categories: ["Memory"] }
-                axisY: addressAxis
-
-                labelsVisible: true
-                labelsPosition: AbstractBarSeries.LabelsCenter
-
-                HBarModelMapper {
-                    model: controller.timelineModel
-                    firstBarSetRow: 0
-                    lastBarSetRow: 2147483647
-                    firstColumn: 0
-                    columnCount: 1
+        Component {
+            id: listDelegate
+            Rectangle {
+                function altColor(i) {
+                    var colors = [ "#339999", "#99CCCC" ]
+                    return colors[i];
                 }
 
-                onCountChanged: {
-                    const ids = controller.timelineModel.ids()
-                    let holeColor = undefined;
-                    for (let i = 0; i < timelineSeries.count; i++) {
-                        if (ids[i] === -1) {
-                            if (holeColor) {
-                                timelineSeries.at(i).color = holeColor;
-                            } else {
-                                holeColor = timelineSeries.at(i).color
-                            }
-                        }
-                    }
+                color: altColor(((model.id) % index) % 2)
+
+                width: parent.width / 2
+                height: size <=25 ? size*4 : size*3
+
+                border.color: "black"
+                border.width: 0.5
+                radius: 5
+
+                Label {
+                    text: name + ": " + size
+                    padding: 4
+                    anchors.centerIn: parent
                 }
             }
         }
+
+        ListView {
+            Layout.preferredWidth: parent.width / 2
+            Layout.preferredHeight: parent.height
+            Layout.alignment: Qt.AlignHCenter
+
+            model: controller.timelineModel
+
+            delegate: listDelegate
+
+            section.property: "id"
+            section.criteria: ViewSection.FullString
+
+            section.delegate: Rectangle {
+                color: "#FFFFCC"
+                width: parent.width / 2
+                height: 5
+                radius: 5
+            }
+        }
+
+//        ChartView {
+//            antialiasing: true
+//            animationOptions: ChartView.AllAnimations
+//            theme: ChartView.ChartThemeBrownSand
+//            legend.alignment: Qt.AlignBottom
+
+//            Layout.preferredWidth: parent.width / 2
+//            Layout.preferredHeight: parent.height
+
+//            ValueAxis {
+//                id: addressAxis
+//                min: 0
+//                max: controller.memorySize
+//                tickType: ValueAxis.TicksFixed
+//                tickCount: 21
+//                reverse: true
+//            }
+
+//            StackedBarSeries {
+//                id: timelineSeries
+//                axisX: BarCategoryAxis { categories: ["Memory"] }
+//                axisY: addressAxis
+
+//                labelsVisible: true
+//                labelsPosition: AbstractBarSeries.LabelsCenter
+
+//                HBarModelMapper {
+//                    model: controller.timelineModel
+//                    firstBarSetRow: 0
+//                    lastBarSetRow: 2147483647
+//                    firstColumn: 0
+//                    columnCount: 1
+//                }
+
+//                onCountChanged: {
+//                    const ids = controller.timelineModel.ids()
+//                    let holeColor = undefined;
+//                    for (let i = 0; i < timelineSeries.count; i++) {
+//                        if (ids[i] === -1) {
+//                            if (holeColor) {
+//                                timelineSeries.at(i).color = holeColor;
+//                            } else {
+//                                holeColor = timelineSeries.at(i).color
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }

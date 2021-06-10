@@ -12,6 +12,13 @@ class TimelineModel : public QAbstractListModel
 public:
     explicit TimelineModel(QObject *parent = nullptr);
 
+    enum Role {
+        IdRole = Qt::UserRole + 1,
+        NameRole,
+        StartAddressRole,
+        SizeRole
+    };
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
@@ -20,6 +27,9 @@ public:
     void clearSegments(void);
 
     Q_INVOKABLE QVariant ids() const;
+
+protected:
+    QHash<int, QByteArray> roleNames() const override;
 
 private:
     QList<Segment> m_data;
